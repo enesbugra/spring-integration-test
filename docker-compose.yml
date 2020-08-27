@@ -1,0 +1,36 @@
+version: '3'
+services:
+  database:
+    image: "postgres" # use latest official postgres version
+    environment:
+      - POSTGRES_USER=enes
+      - POSTGRES_PASSWORD=enes
+      - POSTGRES_DB=integration-test
+    ports:
+      - "5432:5432"
+    volumes:
+      - database-data:/var/lib/postgresql/data/
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "yurugit@hotmail.com"
+      PGADMIN_DEFAULT_PASSWORD: "123456"
+    ports:
+      - "16543:80"
+    depends_on:
+      - database
+  zookeeper:
+    image: wurstmeister/zookeeper
+    ports:
+      - "2181:2181"
+  kafka:
+    image: wurstmeister/kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: 127.0.0.1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+volumes:
+  database-data:
